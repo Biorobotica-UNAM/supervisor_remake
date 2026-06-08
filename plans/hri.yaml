@@ -1,0 +1,8 @@
+# HRI demo plan — executed when launched with plan:=hri
+steps:
+  - action: say
+    args: ["Hello, I am ready to start the task."]
+  - action: goto
+    args: ["living_room"]
+  - action: say
+    args: ["I have arrived at the living room. How can I help you?"]
