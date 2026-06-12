@@ -18,6 +18,8 @@ SupervisorNode::SupervisorNode()
 {
     declare_parameter<std::string>("plan",             "");
     declare_parameter<std::string>("plans_dir",        "");
+    declare_parameter<std::string>("hri_service",      "/hri/talker/talk");
+    declare_parameter<std::string>("nav_service",      "/nav_controller/go_to_location");
     declare_parameter<std::string>("executor_action",  "/executor/execute_task");
     declare_parameter<std::string>("robot_base_frame", "base_link");
 }
@@ -26,6 +28,8 @@ void SupervisorNode::init()
 {
     plan_name_            = get_parameter("plan").as_string();
     plans_dir_            = get_parameter("plans_dir").as_string();
+    hri_service_name_     = get_parameter("hri_service").as_string();
+    nav_service_name_     = get_parameter("nav_service").as_string();
     executor_action_name_ = get_parameter("executor_action").as_string();
     robot_base_frame_     = get_parameter("robot_base_frame").as_string();
 
@@ -37,9 +41,9 @@ void SupervisorNode::init()
     // Health-check clients (only wait_for_service is called on these).
     const rmw_qos_profile_t qos = rmw_qos_profile_services_default;
     hri_check_client_ = create_client<talker_interfaces::srv::Talk>(
-        "/hri/talker/talk", qos);
+        hri_service_name_, qos);
     nav_check_client_ = create_client<known_locations_interfaces::srv::LocationsGet>(
-        "/nav_controller/go_to_location", qos);
+        nav_service_name_, qos);
 
     // Executor action client.
     executor_client_ = rclcpp_action::create_client<ExecuteTask>(this, executor_action_name_);
@@ -97,7 +101,9 @@ void SupervisorNode::run()
 
 bool SupervisorNode::check_modules()
 {
-    RCLCPP_INFO(get_logger(), "Waiting for modules to initialize...");
+    RCLCPP_INFO(get_logger(),
+        "Checking modules: HRI='%s', Nav='%s'",
+        hri_service_name_.c_str(), nav_service_name_.c_str());
 
     // Allow up to 20 s for each module to come online (navigation starts 3 s
     // after the supervisor, HRI 6 s after — launch stagger).
@@ -109,6 +115,7 @@ bool SupervisorNode::check_modules()
     if (!nav_ok) offline.push_back("Navigation");
 
     if (offline.empty()) {
+        rclcpp::sleep_for(1s);   // brief pause before the announcement
         RCLCPP_INFO(get_logger(), "All modules online.");
         hri_->Say("All modules are now online.");
         return true;

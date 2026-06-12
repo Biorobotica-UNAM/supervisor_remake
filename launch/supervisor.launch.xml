@@ -1,14 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <launch>
-  <arg name="plan"      default=""/>
-  <arg name="plans_dir" default="$(find-pkg-share supervisor_remake)/plans"/>
+  <arg name="plan"            default=""/>
+  <arg name="plans_dir"       default="$(find-pkg-share supervisor_remake)/plans"/>
+  <arg name="hri_service"     default="/hri/talker/talk"/>
+  <arg name="nav_service"     default="/nav_controller/go_to_location"/>
+  <arg name="executor_action" default="/executor/execute_task"/>
 
   <push_ros_namespace namespace="supervisor"/>
 
   <node pkg="supervisor_remake" exec="supervisor_node" name="supervisor_node" output="screen">
     <param name="plan"             value="$(var plan)"/>
     <param name="plans_dir"        value="$(var plans_dir)"/>
-    <param name="executor_action"  value="/executor/execute_task"/>
+    <param name="hri_service"      value="$(var hri_service)"/>
+    <param name="nav_service"      value="$(var nav_service)"/>
+    <param name="executor_action"  value="$(var executor_action)"/>
     <param name="robot_base_frame" value="base_link"/>
   </node>
+
+  <!--pop_ros_namespace/-->
 </launch>

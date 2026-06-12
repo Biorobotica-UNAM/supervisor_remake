@@ -48,6 +48,8 @@ private:
     // ── Parameters ───────────────────────────────────────────────────────────
     std::string plan_name_;
     std::string plans_dir_;
+    std::string hri_service_name_;
+    std::string nav_service_name_;
     std::string executor_action_name_;
     std::string robot_base_frame_;
 
@@ -64,7 +66,7 @@ private:
     NavTracker nav_tracker_;
     bool       obstacle_recovery_triggered_{false};
 
-    static constexpr int    kMaxNavAttempts    = 10;
+    static constexpr int    kMaxNavAttempts    = 3;
     static constexpr double kSamePoseThreshold = 0.5;   // metres
 
     // ── Orchestration thread ─────────────────────────────────────────────────

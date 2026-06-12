@@ -3,6 +3,6 @@ steps:
   - action: say
     args: ["Hello, I am ready to start the task."]
   - action: goto
-    args: ["living_room"]
+    args: ["entrance"]
   - action: say
     args: ["I have arrived at the living room. How can I help you?"]
